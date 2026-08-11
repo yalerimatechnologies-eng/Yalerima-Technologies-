@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta
+        name="theme-color"
+        content="#080a0c"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+    <title>
+        YALERIMA GROUP — Secure Access
+    </title>
+
+    <link
+        rel="icon"
+        href="assets/images/logo.png"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet"
+    >
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        :root {
+            --bg: #080a0c;
+            --bg-2: #0d1013;
+
+            --surface:
+                rgba(18, 22, 25, 0.94);
+
+            --surface-2:
+                rgba(255,255,255,.045);
+
+            --line:
+                rgba(255,255,255,.09);
+
+            --line-strong:
+                rgba(216,255,90,.32);
+
+            --text: #f4f7ed;
+
+            --muted: #89918a;
+
+            --accent: #d8ff5a;
+
+            --accent-dark: #9dbb31;
+
+            --danger: #ff6b6b;
+
+            --success: #67e8a5;
+
+            --shadow:
+                0 40px 120px rgba(0,0,0,.72);
+
+            --radius:
+                24px;
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            width: 100%;
+            min-height: 100%;
+
+            touch-action:
+                manipulation;
+
+            -ms-touch-action:
+                manipulation;
+        }
+
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+
+            overflow-x: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(216,255,90,.07),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(216,255,90,.045),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    145deg,
+                    #050607,
+                    #0a0c0e,
+                    #050607
+                );
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                system-ui,
+                sans-serif;
+        }
+
+
+        button,
+        input {
+            font: inherit;
+        }
+
+
+        button {
+            cursor: pointer;
+
+            touch-action:
+                manipulation;
+        }
+
+
+        .page {
+            min-height: 100dvh;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            padding:
+                24px;
+        }
+
+
+        .login-card {
+            width:
+                min(1080px, 100%);
+
+            display:
+                grid;
+
+            grid-template-columns:
+                .9fr 1.1fr;
+
+            overflow:
+                hidden;
+
+            border:
+                1px solid var(--line);
+
+            border-radius:
+                30px;
+
+            background:
+                rgba(12,15,17,.94);
+
+            box-shadow:
+                var(--shadow);
+
+            backdrop-filter:
+                blur(24px);
+        }
+
+
+        /* =========================================
+           BRAND SIDE
+           ========================================= */
+
+        .brand-side {
+            position:
+                relative;
+
+            padding:
+                48px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                space-between;
+
+            overflow:
+                hidden;
+
+            border-right:
+                1px solid var(--line);
+
+            background:
+                radial-gradient(
+                    circle at 20% 10%,
+                    rgba(216,255,90,.11),
+                    transparent 40%
+                );
+        }
+
+
+        .brand-side::before {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.018) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                50px 50px;
+
+            pointer-events:
+                none;
+        }
+
+
+        .brand-content {
+            position:
+                relative;
+
+            z-index:
+                2;
+        }
+
+
+        /* =========================================
+           ACTUAL LOGO
+           ========================================= */
+
+        .logo-container {
+            width:
+                110px;
+
+            height:
+                110px;
+
+            margin:
+                0 auto 34px;
+
+            border-radius:
+                50%;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            background:
+                #101417;
+
+            border:
+                2px solid var(--line-strong);
+
+            box-shadow:
+                0 0 50px rgba(216,255,90,.10),
+                inset 0 0 30px rgba(216,255,90,.035);
+
+            overflow:
+                hidden;
+        }
+
+
+        .logo-container img {
+            width:
+                82%;
+
+            height:
+                82%;
+
+            display:
+                block;
+
+            object-fit:
+                contain;
+
+            border-radius:
+                50%;
+        }
+
+
+        .brand-kicker {
+            color:
+                var(--accent);
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                .22em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .brand-title {
+            margin-top:
+                12px;
+
+            font-size:
+                clamp(32px, 5vw, 54px);
+
+            line-height:
+                .98;
+
+            font-weight:
+                900;
+
+            letter-spacing:
+                -.055em;
+        }
+
+
+        .brand-title span {
+            color:
+                var(--accent);
+        }
+
+
+        .brand-description {
+            margin-top:
+                20px;
+
+            max-width:
+                480px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.8;
+        }
+
+
+        .security-list {
+            display:
+                grid;
+
+            gap:
+                9px;
+
+            margin-top:
+                28px;
+        }
+
+
+        .security-item {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            padding:
+                10px 12px;
+
+            border:
+                1px solid var(--line);
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(255,255,255,.025);
+
+            color:
+                #aeb6ae;
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                9px;
+        }
+
+
+        .security-dot {
+            width:
+                7px;
+
+            height:
+                7px;
+
+            flex:
+                0 0 auto;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--success);
+
+            box-shadow:
+                0 0 12px
+                rgba(103,232,165,.7);
+        }
+
+
+        /* =========================================
+           LOGIN SIDE
+           ========================================= */
+
+        .login-side {
+            padding:
+                48px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+
+        .login-content {
+            width:
+                min(420px,100%);
+        }
+
+
+        .login-kicker {
+            color:
+                var(--muted);
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                9px;
+
+            letter-spacing:
+                .18em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .login-title {
+            margin-top:
+                9px;
+
+            font-size:
+                30px;
+
+            font-weight:
+                900;
+        }
+
+
+        .login-subtitle {
+            margin-top:
+                8px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.7;
+        }
+
+
+        .form {
+            margin-top:
+                28px;
+        }
+
+
+        .field {
+            margin-bottom:
+                16px;
+        }
+
+
+        .field label {
+            display:
+                block;
+
+            margin-bottom:
+                7px;
+
+            color:
+                #aeb6ae;
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                9px;
+
+            letter-spacing:
+                .08em;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        .field input {
+            width:
+                100%;
+
+            height:
+                50px;
+
+            padding:
+                0 14px;
+
+            border:
+                1px solid var(--line);
+
+            border-radius:
+                11px;
+
+            outline:
+                none;
+
+            background:
+                rgba(255,255,255,.035);
+
+            color:
+                var(--text);
+
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease,
+                background .2s ease;
+        }
+
+
+        .field input:focus {
+            border-color:
+                var(--accent);
+
+            background:
+                rgba(216,255,90,.025);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(216,255,90,.07);
+        }
+
+
+        .login-button {
+            width:
+                100%;
+
+            min-height:
+                52px;
+
+            border:
+                0;
+
+            border-radius:
+                11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--accent),
+                    #bde83d
+                );
+
+            color:
+                #080a0c;
+
+            font-weight:
+                900;
+
+            letter-spacing:
+                .02em;
+
+            transition:
+                transform .2s ease,
+                filter .2s ease;
+        }
+
+
+        .login-button:hover {
+            filter:
+                brightness(1.06);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .login-button:active {
+            transform:
+                translateY(1px);
+        }
+
+
+        .login-button:disabled {
+            cursor:
+                wait;
+
+            opacity:
+                .65;
+        }
+
+
+        .message {
+            min-height:
+                20px;
+
+            margin-top:
+                14px;
+
+            font-size:
+                11px;
+
+            color:
+                var(--danger);
+        }
+
+
+        .footer-security {
+            margin-top:
+                30px;
+
+            padding-top:
+                18px;
+
+            border-top:
+                1px solid var(--line);
+
+            color:
+                #59615b;
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                8px;
+
+            line-height:
+                1.7;
+
+            text-transform:
+                uppercase;
+        }
+
+
+        /* =========================================
+           5 SECOND SECURITY LOADER
+           ========================================= */
+
+        .security-loader {
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            z-index:
+                9999;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            background:
+                #050607;
+
+            opacity:
+                0;
+
+            visibility:
+                hidden;
+
+            pointer-events:
+                none;
+
+            transition:
+                opacity .35s ease;
+        }
+
+
+        .security-loader.active {
+            opacity:
+                1;
+
+            visibility:
+                visible;
+
+            pointer-events:
+                auto;
+        }
+
+
+        .loader-inner {
+            width:
+                min(520px, 90%);
+
+            text-align:
+                center;
+        }
+
+
+        .loader-logo {
+            width:
+                82px;
+
+            height:
+                82px;
+
+            margin:
+                0 auto 30px;
+
+            border:
+                1px solid
+                var(--line-strong);
+
+            border-radius:
+                50%;
+
+            overflow:
+                hidden;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+        }
+
+
+        .loader-logo img {
+            width:
+                82%;
+
+            height:
+                82%;
+
+            object-fit:
+                contain;
+        }
+
+
+        .scanner {
+            height:
+                2px;
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            background:
+                rgba(216,255,90,.12);
+        }
+
+
+        .scanner::after {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            top:
+                0;
+
+            left:
+                -30%;
+
+            width:
+                30%;
+
+            height:
+                100%;
+
+            background:
+                var(--accent);
+
+            box-shadow:
+                0 0 20px var(--accent);
+
+            animation:
+                scan 1s linear infinite;
+        }
+
+
+        @keyframes scan {
+            from {
+                left: -30%;
+            }
+
+            to {
+                left: 100%;
+            }
+        }
+
+
+        .loader-terminal {
+            margin-top:
+                20px;
+
+            min-height:
+                90px;
+
+            color:
+                #8f998f;
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                10px;
+
+            line-height:
+                1.8;
+
+            text-align:
+                left;
+        }
+
+
+        .loader-progress {
+            margin-top:
+                18px;
+
+            color:
+                var(--accent);
+
+            font-family:
+                "Space Mono",
+                monospace;
+
+            font-size:
+                9px;
+
+            letter-spacing:
+                .12em;
+        }
+
+
+        @media(max-width:800px) {
+
+            .page {
+                padding:
+                    12px;
+            }
+
+            .login-card {
+                grid-template-columns:
+                    1fr;
+
+                max-height:
+                    none;
+            }
+
+            .brand-side {
+                padding:
+                    30px;
+
+                border-right:
+                    0;
+
+                border-bottom:
+                    1px solid var(--line);
+            }
+
+            .login-side {
+                padding:
+                    30px;
+            }
+
+            .logo-container {
+                width:
+                    88px;
+
+                height:
+                    88px;
+
+                margin-bottom:
+                    24px;
+            }
+
+            .brand-title {
+                font-size:
+                    36px;
+            }
+        }
+
+
+        @media(max-width:480px) {
+
+            .brand-side,
+            .login-side {
+                padding:
+                    24px;
+            }
+
+            .login-title {
+                font-size:
+                    26px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="page">
+
+        <section class="login-card">
+
+            <section class="brand-side">
+
+                <div class="brand-content">
+
+                    <div class="logo-container">
+
+                        <img
+                            src="assets/images/logo.png"
+                            alt="Yalerima Group Logo"
+                        >
+
+                    </div>
+
+
+                    <div class="brand-kicker">
+                        Institutional Control System
+                    </div>
+
+
+                    <h1 class="brand-title">
+                        YALERIMA
+                        <span>GROUP</span>
+                    </h1>
+
+
+                    <p class="brand-description">
+                        Secure institutional management infrastructure
+                        for clients, workforce, agreements, projects,
+                        financial records and operational intelligence.
+                    </p>
+
+
+                    <div class="security-list">
+
+                        <div class="security-item">
+                            <span class="security-dot"></span>
+                            ENCRYPTED AUTHENTICATION
+                        </div>
+
+                        <div class="security-item">
+                            <span class="security-dot"></span>
+                            ROW LEVEL DATABASE SECURITY
+                        </div>
+
+                        <div class="security-item">
+                            <span class="security-dot"></span>
+                            SECURE SESSION CONTROL
+                        </div>
+
+                        <div class="security-item">
+                            <span class="security-dot"></span>
+                            INSTITUTIONAL ACCESS MONITORING
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="footer-security">
+                    YALERIMA GROUP • INTERNAL SYSTEM •
+                    AUTHORIZED PERSONNEL ONLY
+                </div>
+
+            </section>
+
+
+            <section class="login-side">
+
+                <div class="login-content">
+
+                    <div class="login-kicker">
+                        Secure Authentication Gateway
+                    </div>
+
+                    <h2 class="login-title">
+                        Access Control Center
+                    </h2>
+
+                    <p class="login-subtitle">
+                        Authenticate with your authorized
+                        institutional credentials.
+                    </p>
+
+
+                    <form
+                        id="loginForm"
+                        class="form"
+                        autocomplete="on"
+                    >
+
+                        <div class="field">
+
+                            <label for="email">
+                                Institutional Email
+                            </label>
+
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autocomplete="username"
+                                required
+                                placeholder="name@company.com"
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autocomplete="current-password"
+                                required
+                                placeholder="Enter secure password"
+                            >
+
+                        </div>
+
+
+                        <button
+                            id="loginButton"
+                            class="login-button"
+                            type="submit"
+                        >
+                            AUTHENTICATE
+                        </button>
+
+
+                        <div
+                            id="loginMessage"
+                            class="message"
+                            role="alert"
+                        ></div>
+
+                    </form>
+
+
+                    <div class="footer-security">
+
+                        All access attempts are authenticated
+                        and subject to institutional security
+                        policies.
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         5 SECOND SECURITY SEQUENCE
+         ========================================= -->
+
+    <div
+        id="securityLoader"
+        class="security-loader"
+        aria-hidden="true"
+    >
+
+        <div class="loader-inner">
+
+            <div class="loader-logo">
+
+                <img
+                    src="assets/images/logo.png"
+                    alt="Yalerima"
+                >
+
+            </div>
+
+
+            <div class="scanner"></div>
+
+
+            <div
+                id="loaderTerminal"
+                class="loader-terminal"
+            ></div>
+
+
+            <div
+                id="loaderProgress"
+                class="loader-progress"
+            >
+                SECURITY INITIALIZATION 0%
+            </div>
+
+        </div>
+
+    </div>
+
+
+   <script>
+/* ================================================================
+   YALERIMA GROUP — SECURE ADMIN LOGIN
+   Production-safe Supabase authentication
+   ================================================================ */
+
+(function () {
+    "use strict";
+
+    const SUPABASE_URL =
+        window.__SUPABASE_URL__ ||
+        "https://yisuubdanhisuzxkgufn.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+        window.__SUPABASE_ANON_KEY__ ||
+        "sb_publishable_PWEvImisbMTuE2y64i75rg_WJeFwEKU";
+
+    const ADMIN_ID =
+        "ebb9ea5c-9968-475b-832a-5827fd038e96";
+
+    const ADMIN_EMAIL =
+        "yalerimatechnologies@gmail.com";
+
+    const LOGIN_REDIRECT =
+        "dashboard.html";
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+    const loginMessage =
+        document.getElementById("loginMessage");
+
+    const securityLoader =
+        document.getElementById("securityLoader");
+
+    const loaderTerminal =
+        document.getElementById("loaderTerminal");
+
+    const loaderProgress =
+        document.getElementById("loaderProgress");
+
+
+    /* ================================================================
+       MESSAGE
+       ================================================================ */
+
+    function setMessage(message, type = "error") {
+
+        if (!loginMessage) return;
+
+        loginMessage.textContent =
+            message || "";
+
+        loginMessage.style.color =
+            type === "success"
+                ? "var(--success)"
+                : type === "warning"
+                    ? "#ffc857"
+                    : "var(--danger)";
+    }
+
+
+    /* ================================================================
+       LOADER
+       ================================================================ */
+
+    function showSecurityLoader() {
+
+        if (!securityLoader) return;
+
+        securityLoader.classList.add("active");
+
+        securityLoader.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+
+    function hideSecurityLoader() {
+
+        if (!securityLoader) return;
+
+        securityLoader.classList.remove("active");
+
+        securityLoader.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    function runSecuritySequence() {
+
+        const messages = [
+            "AUTHENTICATION ACCEPTED",
+            "VERIFYING INSTITUTIONAL PROFILE",
+            "VALIDATING ACCESS POLICIES",
+            "INITIALIZING SECURE SESSION",
+            "LOADING YALERIMA CONTROL CENTER"
+        ];
+
+        const start =
+            performance.now();
+
+        const duration = 5000;
+
+        return new Promise(resolve => {
+
+            function update(now) {
+
+                const elapsed =
+                    now - start;
+
+                const progress =
+                    Math.min(
+                        100,
+                        Math.floor(
+                            (elapsed / duration) * 100
+                        )
+                    );
+
+                if (loaderProgress) {
+
+                    loaderProgress.textContent =
+                        `SECURITY INITIALIZATION ${progress}%`;
+                }
+
+                const index =
+                    Math.min(
+                        messages.length - 1,
+                        Math.floor(
+                            elapsed / 1000
+                        )
+                    );
+
+                if (loaderTerminal) {
+
+                    loaderTerminal.textContent =
+                        messages
+                            .slice(0, index + 1)
+                            .map(
+                                message =>
+                                    `> ${message}`
+                            )
+                            .join("\n");
+                }
+
+                if (elapsed < duration) {
+
+                    requestAnimationFrame(update);
+
+                }
+
+            }
+
+            requestAnimationFrame(update);
+
+            setTimeout(
+                resolve,
+                duration
+            );
+        });
+    }
+
+
+    /* ================================================================
+       WAIT FOR SUPABASE
+       ================================================================ */
+
+    function waitForSupabase(timeout = 15000) {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                const started =
+                    Date.now();
+
+                function check() {
+
+                    if (
+                        window.supabase &&
+                        typeof window.supabase.createClient === "function"
+                    ) {
+
+                        resolve(
+                            window.supabase
+                        );
+
+                        return;
+                    }
+
+                    if (
+                        Date.now() - started >=
+                        timeout
+                    ) {
+
+                        reject(
+                            new Error(
+                                "Supabase library failed to load. Check your internet connection or Supabase CDN configuration."
+                            )
+                        );
+
+                        return;
+                    }
+
+                    setTimeout(
+                        check,
+                        50
+                    );
+                }
+
+                check();
+            }
+        );
+    }
+
+
+    /* ================================================================
+       CONFIGURATION VALIDATION
+       ================================================================ */
+
+    function validateConfiguration() {
+
+        if (
+            !SUPABASE_URL ||
+            SUPABASE_URL.includes("YOUR_SUPABASE") ||
+            SUPABASE_URL.includes("YOUR-PROJECT")
+        ) {
+
+            throw new Error(
+                "Supabase Project URL has not been configured."
+            );
+        }
+
+        if (
+            !SUPABASE_ANON_KEY ||
+            SUPABASE_ANON_KEY.includes("YOUR_") ||
+            SUPABASE_ANON_KEY.includes("YOUR-")
+        ) {
+
+            throw new Error(
+                "Supabase public/anon key has not been configured."
+            );
+        }
+    }
+
+
+    /* ================================================================
+       SUPABASE CLIENT
+       ================================================================ */
+
+    let supabaseClient = null;
+
+
+    async function initializeSupabase() {
+
+        validateConfiguration();
+
+        const supabase =
+            await waitForSupabase();
+
+        supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY,
+                {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
+                    },
+
+                    realtime: {
+                        params: {
+                            eventsPerSecond: 10
+                        }
+                    }
+                }
+            );
+
+        return supabaseClient;
+    }
+
+
+    /* ================================================================
+       VERIFY ADMIN PROFILE
+       ================================================================ */
+
+    async function verifyAdministrator() {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError) {
+
+            throw sessionError;
+        }
+
+        const session =
+            sessionData &&
+            sessionData.session;
+
+        if (!session) {
+
+            throw new Error(
+                "Authentication session was not created."
+            );
+        }
+
+
+        const authenticatedUser =
+            session.user;
+
+
+        /*
+         * The authenticated Supabase user MUST be the
+         * administrator configured in the database.
+         */
+
+        if (
+            authenticatedUser.id !==
+            ADMIN_ID
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+                "This account is not authorized for the Yalerima Group Control Center."
+            );
+        }
+
+
+        /*
+         * Confirm the administrator exists in
+         * public.admin_profiles and is active.
+         */
+
+        const {
+            data: adminProfile,
+            error: adminError
+        } =
+            await supabaseClient
+                .from("admin_profiles")
+                .select(
+                    "id,email,full_name,role,is_active"
+                )
+                .eq(
+                    "id",
+                    ADMIN_ID
+                )
+                .maybeSingle();
+
+
+        if (adminError) {
+
+            throw adminError;
+        }
+
+
+        if (!adminProfile) {
+
+            throw new Error(
+                "Administrator profile was not found in the database."
+            );
+        }
+
+
+        if (!adminProfile.is_active) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+                "This administrator account has been disabled."
+            );
+        }
+
+
+        if (
+            ![
+                "super_admin",
+                "admin"
+            ].includes(
+                adminProfile.role
+            )
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+                "This account does not have administrative privileges."
+            );
+        }
+
+
+        return {
+            session,
+            user: authenticatedUser,
+            profile: adminProfile
+        };
+    }
+
+
+    /* ================================================================
+       AUTHENTICATE
+       ================================================================ */
+
+    async function authenticate() {
+
+        if (!loginForm) return;
+
+
+        const emailInput =
+            document.getElementById("email");
+
+        const passwordInput =
+            document.getElementById("password");
+
+
+        const email =
+            emailInput
+                ? emailInput.value.trim()
+                : "";
+
+        const password =
+            passwordInput
+                ? passwordInput.value
+                : "";
+
+
+        if (!email) {
+
+            setMessage(
+                "Enter your institutional email."
+            );
+
+            emailInput?.focus();
+
+            return;
+        }
+
+
+        if (!password) {
+
+            setMessage(
+                "Enter your secure password."
+            );
+
+            passwordInput?.focus();
+
+            return;
+        }
+
+
+        if (
+            email.toLowerCase() !==
+            ADMIN_EMAIL.toLowerCase()
+        ) {
+
+            setMessage(
+                "This email is not authorized for the Yalerima Group Control Center."
+            );
+
+            return;
+        }
+
+
+        loginButton.disabled =
+            true;
+
+        loginButton.textContent =
+            "AUTHENTICATING…";
+
+        setMessage("");
+
+
+        try {
+
+            await initializeSupabase();
+
+
+            /*
+             * Clear any stale session first.
+             * This prevents an old account from being
+             * accidentally reused.
+             */
+
+            await supabaseClient.auth.signOut();
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+
+            if (error) {
+
+                throw error;
+            }
+
+
+            if (
+                !data ||
+                !data.user ||
+                !data.session
+            ) {
+
+                throw new Error(
+                    "Supabase did not create a valid administrator session."
+                );
+            }
+
+
+            /*
+             * Verify database administrator profile.
+             */
+
+            await verifyAdministrator();
+
+
+            setMessage(
+                "Authentication accepted. Initializing secure control center.",
+                "success"
+            );
+
+
+            showSecurityLoader();
+
+
+            await runSecuritySequence();
+
+
+            /*
+             * Final session verification before routing.
+             */
+
+            const {
+                data: finalSession
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (
+                !finalSession ||
+                !finalSession.session
+            ) {
+
+                throw new Error(
+                    "The secure session expired before the dashboard could be opened."
+                );
+            }
+
+
+            /*
+             * IMPORTANT:
+             * Replace() prevents the login page from
+             * remaining in browser history.
+             */
+
+            window.location.replace(
+                LOGIN_REDIRECT
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "[YALERIMA AUTH]",
+                error
+            );
+
+
+            hideSecurityLoader();
+
+
+            let message =
+                "Authentication failed. Please verify your credentials.";
+
+
+            if (
+                error &&
+                typeof error.message === "string"
+            ) {
+
+                const raw =
+                    error.message.toLowerCase();
+
+
+                if (
+                    raw.includes("invalid login") ||
+                    raw.includes("invalid credentials") ||
+                    raw.includes("invalid email") ||
+                    raw.includes("invalid password")
+                ) {
+
+                    message =
+                        "Invalid institutional email or password.";
+
+                }
+                else if (
+                    raw.includes("email not confirmed")
+                ) {
+
+                    message =
+                        "This administrator email has not been confirmed in Supabase Auth.";
+
+                }
+                else if (
+                    raw.includes("not authorized")
+                ) {
+
+                    message =
+                        error.message;
+
+                }
+                else if (
+                    raw.includes("supabase project url") ||
+                    raw.includes("public/anon key")
+                ) {
+
+                    message =
+                        error.message;
+
+                }
+                else if (
+                    raw.includes("failed to load")
+                ) {
+
+                    message =
+                        error.message;
+
+                }
+                else {
+
+                    message =
+                        error.message;
+                }
+            }
+
+
+            setMessage(
+                message
+            );
+
+
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "AUTHENTICATE";
+        }
+    }
+
+
+    /* ================================================================
+       EXISTING SESSION
+       ================================================================ */
+
+    async function checkExistingSession() {
+
+        try {
+
+            await initializeSupabase();
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.warn(
+                    "[YALERIMA SESSION]",
+                    error
+                );
+
+                return;
+            }
+
+
+            const session =
+                data &&
+                data.session;
+
+
+            if (!session) {
+
+                return;
+            }
+
+
+            /*
+             * Do not blindly redirect any authenticated
+             * Supabase account.
+             *
+             * Verify administrator first.
+             */
+
+            try {
+
+                await verifyAdministrator();
+
+                window.location.replace(
+                    LOGIN_REDIRECT
+                );
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "[YALERIMA AUTH]",
+                    error
+                );
+
+                await supabaseClient.auth.signOut();
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "[YALERIMA INIT]",
+                error
+            );
+
+            /*
+             * Do not redirect or blank the page.
+             * Keep the login screen usable.
+             */
+
+            setMessage(
+                error.message ||
+                "Secure authentication service could not be initialized."
+            );
+        }
+    }
+
+
+    /* ================================================================
+       AUTH STATE MONITOR
+       ================================================================ */
+
+    async function setupAuthListener() {
+
+        if (!supabaseClient) return;
+
+
+        supabaseClient.auth.onAuthStateChange(
+            async (
+                event,
+                session
+            ) => {
+
+                console.log(
+                    "[YALERIMA AUTH EVENT]",
+                    event
+                );
+
+
+                if (
+                    event === "SIGNED_OUT"
+                ) {
+
+                    hideSecurityLoader();
+
+                    if (loginButton) {
+
+                        loginButton.disabled =
+                            false;
+
+                        loginButton.textContent =
+                            "AUTHENTICATE";
+                    }
+
+                    return;
+                }
+
+
+                if (
+                    event === "TOKEN_REFRESHED" &&
+                    session
+                ) {
+
+                    return;
+                }
+            }
+        );
+    }
+
+
+    /* ================================================================
+       FORM BINDING
+       ================================================================ */
+
+    function bindLoginForm() {
+
+        if (!loginForm) {
+
+            console.error(
+                "[YALERIMA AUTH] loginForm not found."
+            );
+
+            return;
+        }
+
+
+        loginForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                authenticate();
+            }
+        );
+
+
+        /*
+         * Enter key works naturally because this is
+         * a real HTML form.
+         */
+
+        loginForm.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    /*
+                     * Let the browser submit the
+                     * form normally.
+                     */
+
+                    return;
+                }
+            }
+        );
+    }
+
+
+    /* ================================================================
+       BOOTSTRAP
+       ================================================================ */
+
+    async function boot() {
+
+        try {
+
+            bindLoginForm();
+
+            /*
+             * Give the page a moment to paint before
+             * initializing Supabase.
+             */
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        0
+                    )
+            );
+
+
+            await initializeSupabase();
+
+            await setupAuthListener();
+
+            await checkExistingSession();
+
+        }
+        catch (error) {
+
+            console.error(
+                "[YALERIMA BOOT]",
+                error
+            );
+
+            setMessage(
+                error.message ||
+                "Authentication system initialization failed."
+            );
+
+            if (loginButton) {
+
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "AUTHENTICATE";
+            }
+        }
+    }
+
+
+    /*
+     * DOM is already available because this script is
+     * placed at the bottom of <body>, but this also keeps
+     * the implementation safe if moved later.
+     */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            boot,
+            { once: true }
+        );
+
+    }
+    else {
+
+        boot();
+    }
+
+})();
+</script>
+</body>
+
+</html>
