@@ -1,0 +1,3509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    >
+
+    <title>YALERIMA GROUP — Client Management</title>
+
+    <!-- =========================================================
+         SUPABASE
+    ========================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- =========================================================
+         EXCEL EXPORT
+    ========================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- =========================================================
+         PDF EXPORT
+    ========================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.3/dist/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        /* =====================================================
+           RESET
+        ====================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #111827;
+            --primary-light: #1f2937;
+            --accent: #2563eb;
+            --accent-light: #eff6ff;
+
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+
+            --warning: #d97706;
+            --warning-bg: #fef3c7;
+
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+
+            --border: #e5e7eb;
+            --background: #f5f7fb;
+            --card: #ffffff;
+
+            --text: #111827;
+            --muted: #6b7280;
+
+            --radius: 14px;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           HEADER
+        ====================================================== */
+
+        .topbar {
+            height: 70px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+
+            background: var(--primary);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* =====================================================
+           BUTTONS
+        ====================================================== */
+
+        .btn {
+            border: 0;
+            border-radius: 9px;
+
+            padding: 10px 15px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition: .15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-dark {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-light {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        /* =====================================================
+           PAGE
+        ====================================================== */
+
+        .page {
+            max-width: 1500px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .page-heading {
+            margin-bottom: 24px;
+        }
+
+        .page-heading h1 {
+            font-size: 28px;
+            font-weight: 850;
+        }
+
+        .page-heading p {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           STATISTICS
+        ====================================================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(5, minmax(0, 1fr));
+
+            gap: 16px;
+
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .stat-value {
+            margin-top: 9px;
+            font-size: 28px;
+            font-weight: 850;
+        }
+
+        /* =====================================================
+           TOOLBAR
+        ====================================================== */
+
+        .toolbar {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            padding: 15px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 16px;
+
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-box input,
+        .toolbar select {
+            width: 100%;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: white;
+
+            padding: 11px 13px;
+
+            outline: none;
+        }
+
+        .search-box input:focus,
+        .toolbar select:focus {
+            border-color: var(--accent);
+        }
+
+        /* =====================================================
+           TABLE
+        ====================================================== */
+
+        .table-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th {
+            background: #f9fafb;
+
+            color: var(--muted);
+
+            text-align: left;
+
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+
+            padding: 14px 16px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px 16px;
+
+            border-bottom: 1px solid #f0f1f3;
+
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .client-name {
+            font-weight: 750;
+        }
+
+        .client-email {
+            color: var(--muted);
+            margin-top: 3px;
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           BADGES
+        ====================================================== */
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: capitalize;
+        }
+
+        .badge-active {
+            color: #166534;
+            background: var(--success-bg);
+        }
+
+        .badge-inactive {
+            color: #92400e;
+            background: var(--warning-bg);
+        }
+
+        .badge-archived {
+            color: #991b1b;
+            background: var(--danger-bg);
+        }
+
+        /* =====================================================
+           ACTIONS
+        ====================================================== */
+
+        .row-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            border: 1px solid var(--border);
+
+            background: white;
+
+            border-radius: 7px;
+
+            padding: 7px 9px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .icon-btn:hover {
+            background: #f3f4f6;
+        }
+
+        /* =====================================================
+           EMPTY / LOADING
+        ====================================================== */
+
+        .state {
+            padding: 70px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+
+            border: 3px solid #e5e7eb;
+            border-top-color: var(--accent);
+
+            border-radius: 50%;
+
+            animation: spin .7s linear infinite;
+
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =====================================================
+           PAGINATION
+        ====================================================== */
+
+        .pagination {
+            padding: 14px 16px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination-info {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            gap: 7px;
+        }
+
+        /* =====================================================
+           MODAL
+        ====================================================== */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(15, 23, 42, .55);
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 500;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(1000px, 100%);
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 18px;
+
+            box-shadow: 0 20px 70px rgba(0,0,0,.25);
+        }
+
+        .modal-header {
+            padding: 20px 22px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            border-bottom: 1px solid var(--border);
+
+            position: sticky;
+            top: 0;
+
+            background: white;
+
+            z-index: 2;
+        }
+
+        .modal-title {
+            font-size: 19px;
+            font-weight: 850;
+        }
+
+        .close {
+            width: 35px;
+            height: 35px;
+
+            border: 0;
+            background: #f3f4f6;
+
+            border-radius: 50%;
+
+            font-size: 18px;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        /* =====================================================
+           CLIENT DETAILS
+        ====================================================== */
+
+        .client-profile {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+        }
+
+        .detail-card {
+            background: #f9fafb;
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            padding: 14px;
+        }
+
+        .detail-label {
+            color: var(--muted);
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            margin-top: 5px;
+
+            font-weight: 700;
+
+            font-size: 13px;
+
+            word-break: break-word;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 850;
+
+            margin: 22px 0 12px;
+        }
+
+        /* =====================================================
+           MESSAGE
+        ====================================================== */
+
+        .message {
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+        }
+
+        .message-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .message-subject {
+            font-weight: 800;
+        }
+
+        .message-date {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .message-body {
+            margin-top: 10px;
+
+            white-space: pre-wrap;
+
+            line-height: 1.55;
+
+            font-size: 13px;
+        }
+
+        .message-actions {
+            margin-top: 12px;
+
+            display: flex;
+            gap: 7px;
+        }
+
+        /* =====================================================
+           REPLY
+        ====================================================== */
+
+        .reply-box {
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            margin-top: 12px;
+        }
+
+        .reply-box input,
+        .reply-box textarea {
+            width: 100%;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            padding: 10px 12px;
+
+            margin-bottom: 10px;
+
+            outline: none;
+        }
+
+        .reply-box textarea {
+            min-height: 150px;
+
+            resize: vertical;
+        }
+
+        .reply-box input:focus,
+        .reply-box textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* =====================================================
+           TOAST
+        ====================================================== */
+
+        .toast-container {
+            position: fixed;
+
+            right: 20px;
+            bottom: 20px;
+
+            z-index: 1000;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+        .toast {
+            background: #111827;
+            color: white;
+
+            padding: 12px 15px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            box-shadow: 0 10px 30px rgba(0,0,0,.18);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .client-profile {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .page {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .client-profile {
+                grid-template-columns: 1fr;
+            }
+
+            .top-actions .btn span {
+                display: none;
+            }
+
+            .page-heading h1 {
+                font-size: 23px;
+            }
+        }
+
+        /* =====================================================
+           PRINT
+        ====================================================== */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .topbar,
+            .page-heading,
+            .toolbar,
+            .pagination,
+            .row-actions,
+            .modal,
+            .toast-container {
+                display: none !important;
+            }
+
+            .page {
+                max-width: none;
+                padding: 0;
+            }
+
+            .table-card {
+                border: 0;
+            }
+
+            table {
+                min-width: 0;
+            }
+
+            th,
+            td {
+                font-size: 9px;
+                padding: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     TOP BAR
+========================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            YG
+        </div>
+
+        <div>
+            <div class="brand-title">
+                YALERIMA GROUP
+            </div>
+
+            <div class="brand-subtitle">
+                Client Management
+            </div>
+        </div>
+
+    </div>
+
+    <div class="top-actions">
+
+        <button
+            class="btn btn-light"
+            onclick="loadEverything()"
+        >
+            ↻ <span>Refresh</span>
+        </button>
+
+        <button
+            class="btn btn-dark"
+            onclick="exportExcel()"
+        >
+            Excel
+        </button>
+
+        <button
+            class="btn btn-primary"
+            onclick="exportPDF()"
+        >
+            PDF
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================== -->
+
+<main class="page">
+
+    <div class="page-heading">
+
+        <h1>
+            Clients
+        </h1>
+
+        <p>
+            Complete client registry connected directly to your
+            Supabase client and contact-request database.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total Clients
+            </div>
+
+            <div
+                class="stat-value"
+                id="statTotal"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Active
+            </div>
+
+            <div
+                class="stat-value"
+                id="statActive"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Inactive
+            </div>
+
+            <div
+                class="stat-value"
+                id="statInactive"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Archived
+            </div>
+
+            <div
+                class="stat-value"
+                id="statArchived"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Messages
+            </div>
+
+            <div
+                class="stat-value"
+                id="statMessages"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    <section class="toolbar">
+
+        <div class="search-box">
+
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Search clients by name, email, phone, company..."
+                oninput="applyFilters()"
+            >
+
+        </div>
+
+
+        <div style="min-width:160px">
+
+            <select
+                id="statusFilter"
+                onchange="applyFilters()"
+            >
+
+                <option value="all">
+                    All Statuses
+                </option>
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="inactive">
+                    Inactive
+                </option>
+
+                <option value="archived">
+                    Archived
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            class="btn btn-light"
+            onclick="clearFilters()"
+        >
+            Clear
+        </button>
+
+
+        <button
+            class="btn btn-dark"
+            onclick="exportExcel()"
+        >
+            Export Excel
+        </button>
+
+
+        <button
+            class="btn btn-primary"
+            onclick="exportPDF()"
+        >
+            Export PDF
+        </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <section class="table-card">
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Client
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Company
+                        </th>
+
+                        <th>
+                            Industry
+                        </th>
+
+                        <th>
+                            Messages
+                        </th>
+
+                        <th>
+                            Last Message
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="clientsTable">
+
+                    <tr>
+
+                        <td colspan="8">
+
+                            <div class="state">
+
+                                <div class="spinner"></div>
+
+                                Loading clients...
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="pagination">
+
+            <div
+                class="pagination-info"
+                id="paginationInfo"
+            >
+                0 clients
+            </div>
+
+            <div class="pagination-buttons">
+
+                <button
+                    class="btn btn-light"
+                    onclick="previousPage()"
+                >
+                    Previous
+                </button>
+
+                <button
+                    class="btn btn-light"
+                    onclick="nextPage()"
+                >
+                    Next
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     CLIENT DETAIL MODAL
+========================================================== -->
+
+<div
+    class="modal"
+    id="clientModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <div
+                    class="modal-title"
+                    id="modalClientName"
+                >
+                    Client
+                </div>
+
+            </div>
+
+            <button
+                class="close"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="clientDetail"
+        >
+
+            <div class="state">
+
+                <div class="spinner"></div>
+
+                Loading client...
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================== -->
+
+<div
+    class="toast-container"
+    id="toastContainer"
+></div>
+
+
+<script>
+/* =============================================================
+   YALERIMA GROUP
+   CLIENT MANAGEMENT
+   EVERYTHING IS INSIDE THIS ONE HTML FILE
+============================================================= */
+
+
+/* =============================================================
+   SUPABASE CONFIGURATION
+
+   IMPORTANT:
+   Use the EXACT same URL and ANON KEY from dashboard.html.
+============================================================= */
+
+const SUPABASE_URL =
+    "https://yisuubdanhisuzxkgufn.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_PWEvImisbMTuE2y64i75rg_WJeFwEKU";
+
+
+const {
+    createClient
+} = supabase;
+
+
+const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+
+/* =============================================================
+   APPLICATION STATE
+============================================================= */
+
+let allClients = [];
+
+let filteredClients = [];
+
+let currentClient = null;
+
+let currentPage = 1;
+
+const PAGE_SIZE = 20;
+
+
+/* =============================================================
+   DOM
+============================================================= */
+
+const tableBody =
+    document.getElementById("clientsTable");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+
+/* =============================================================
+   INITIALIZATION
+============================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        await initialize();
+
+    }
+);
+
+
+/* =============================================================
+   INITIALIZE
+============================================================= */
+
+async function initialize() {
+
+    try {
+
+        const {
+            data: {
+                session
+            },
+            error
+        } = await db.auth.getSession();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!session) {
+
+            showError(
+                "You are not logged in. Please return to the dashboard and login."
+            );
+
+            return;
+        }
+
+
+        /*
+         * The database RLS policies are responsible for
+         * enforcing the actual authorization.
+         *
+         * The page additionally verifies that the current
+         * user is an administrator.
+         */
+
+        const {
+            data: admin,
+            error: adminError
+        } = await db.rpc(
+            "is_super_admin"
+        );
+
+
+        if (adminError) {
+
+            console.warn(
+                "is_super_admin check:",
+                adminError
+            );
+
+        }
+
+
+        if (admin === false) {
+
+            showError(
+                "Administrative authorization required."
+            );
+
+            return;
+        }
+
+
+        await loadEverything();
+
+
+        subscribeRealtime();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            error.message ||
+            "Unable to initialize Client Management."
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   LOAD EVERYTHING
+============================================================= */
+
+async function loadEverything() {
+
+    try {
+
+        showLoading();
+
+        await Promise.all([
+            loadClients(),
+            loadStatistics()
+        ]);
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            error.message ||
+            "Unable to load client information."
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   LOAD ALL CLIENTS
+============================================================= */
+
+async function loadClients() {
+
+    /*
+     * Fetch ALL clients.
+     *
+     * We intentionally do not use:
+     *
+     * .limit(6)
+     *
+     * because this page is the complete Client Management
+     * registry.
+     */
+
+    const {
+        data,
+        error
+    } = await db
+        .from("clients")
+        .select("*")
+        .order(
+            "updated_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    allClients =
+        Array.isArray(data)
+            ? data
+            : [];
+
+
+    applyFilters();
+
+}
+
+
+/* =============================================================
+   STATISTICS
+============================================================= */
+
+async function loadStatistics() {
+
+    const {
+        data,
+        error
+    } = await db.rpc(
+        "client_management_statistics"
+    );
+
+
+    if (error) {
+
+        console.warn(
+            "Statistics RPC unavailable:",
+            error
+        );
+
+        /*
+         * Fall back to calculating basic statistics locally.
+         */
+
+        calculateLocalStatistics();
+
+        return;
+
+    }
+
+
+    if (!data) {
+
+        calculateLocalStatistics();
+
+        return;
+
+    }
+
+
+    document.getElementById("statTotal")
+        .textContent =
+        Number(data.total || 0)
+            .toLocaleString();
+
+
+    document.getElementById("statActive")
+        .textContent =
+        Number(data.active || 0)
+            .toLocaleString();
+
+
+    document.getElementById("statInactive")
+        .textContent =
+        Number(data.inactive || 0)
+            .toLocaleString();
+
+
+    document.getElementById("statArchived")
+        .textContent =
+        Number(data.archived || 0)
+            .toLocaleString();
+
+
+    document.getElementById("statMessages")
+        .textContent =
+        Number(data.messages || 0)
+            .toLocaleString();
+
+}
+
+
+/* =============================================================
+   LOCAL STATISTICS FALLBACK
+============================================================= */
+
+function calculateLocalStatistics() {
+
+    const active =
+        allClients.filter(
+            c => c.status === "active" &&
+                 !c.archived_at
+        ).length;
+
+
+    const inactive =
+        allClients.filter(
+            c => c.status === "inactive" &&
+                 !c.archived_at
+        ).length;
+
+
+    const archived =
+        allClients.filter(
+            c =>
+                c.status === "archived" ||
+                c.archived_at
+        ).length;
+
+
+    const messages =
+        allClients.reduce(
+            (total, client) =>
+                total +
+                Number(client.message_count || 0),
+            0
+        );
+
+
+    document.getElementById("statTotal")
+        .textContent =
+        (
+            active +
+            inactive
+        ).toLocaleString();
+
+
+    document.getElementById("statActive")
+        .textContent =
+        active.toLocaleString();
+
+
+    document.getElementById("statInactive")
+        .textContent =
+        inactive.toLocaleString();
+
+
+    document.getElementById("statArchived")
+        .textContent =
+        archived.toLocaleString();
+
+
+    document.getElementById("statMessages")
+        .textContent =
+        messages.toLocaleString();
+
+}
+
+
+/* =============================================================
+   FILTERING
+============================================================= */
+
+function applyFilters() {
+
+    const search =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const status =
+        statusFilter.value;
+
+
+    filteredClients =
+        allClients.filter(
+            client => {
+
+                const searchable = [
+
+                    client.name,
+
+                    client.email,
+
+                    client.contact_email,
+
+                    client.phone,
+
+                    client.company_name,
+
+                    client.company,
+
+                    client.industry,
+
+                    client.type
+
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    searchable.includes(search);
+
+
+                const matchesStatus =
+                    status === "all" ||
+                    (
+                        status === "archived"
+                            ? (
+                                client.status === "archived" ||
+                                client.archived_at
+                            )
+                            : client.status === status
+                    );
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    currentPage = 1;
+
+    renderClients();
+
+}
+
+
+/* =============================================================
+   CLEAR FILTERS
+============================================================= */
+
+function clearFilters() {
+
+    searchInput.value = "";
+
+    statusFilter.value = "all";
+
+    applyFilters();
+
+}
+
+
+/* =============================================================
+   RENDER CLIENTS
+============================================================= */
+
+function renderClients() {
+
+    const total =
+        filteredClients.length;
+
+
+    const start =
+        (currentPage - 1) *
+        PAGE_SIZE;
+
+
+    const end =
+        start +
+        PAGE_SIZE;
+
+
+    const pageClients =
+        filteredClients.slice(
+            start,
+            end
+        );
+
+
+    if (!pageClients.length) {
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8">
+                    <div class="state">
+                        No clients found.
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        updatePagination();
+
+        return;
+    }
+
+
+    tableBody.innerHTML =
+        pageClients
+            .map(
+                client =>
+                    clientRow(client)
+            )
+            .join("");
+
+
+    updatePagination();
+
+}
+
+
+/* =============================================================
+   CLIENT ROW
+============================================================= */
+
+function clientRow(client) {
+
+    const name =
+        escapeHTML(
+            client.name ||
+            "Unnamed Client"
+        );
+
+
+    const email =
+        escapeHTML(
+            client.email ||
+            client.contact_email ||
+            "No email"
+        );
+
+
+    const phone =
+        escapeHTML(
+            client.phone ||
+            "—"
+        );
+
+
+    const company =
+        escapeHTML(
+            client.company_name ||
+            client.company ||
+            "—"
+        );
+
+
+    const industry =
+        escapeHTML(
+            client.industry ||
+            "—"
+        );
+
+
+    const messages =
+        Number(
+            client.message_count || 0
+        );
+
+
+    const lastMessage =
+        formatDate(
+            client.last_message_at
+        );
+
+
+    const status =
+        client.archived_at
+            ? "archived"
+            : (
+                client.status ||
+                "active"
+            );
+
+
+    return `
+
+        <tr>
+
+            <td>
+
+                <div class="client-name">
+                    ${name}
+                </div>
+
+                <div class="client-email">
+                    ${email}
+                </div>
+
+            </td>
+
+
+            <td>
+                ${phone}
+            </td>
+
+
+            <td>
+                ${company}
+            </td>
+
+
+            <td>
+                ${industry}
+            </td>
+
+
+            <td>
+                ${messages}
+            </td>
+
+
+            <td>
+                ${lastMessage}
+            </td>
+
+
+            <td>
+
+                <span
+                    class="badge badge-${status}"
+                >
+                    ${status}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <div class="row-actions">
+
+                    <button
+                        class="icon-btn"
+                        onclick="openClient('${client.id}')"
+                    >
+                        View
+                    </button>
+
+
+                    ${
+                        status !== "archived"
+                        ? `
+                            <button
+                                class="icon-btn"
+                                onclick="archiveClient('${client.id}')"
+                            >
+                                Archive
+                            </button>
+                        `
+                        : ""
+                    }
+
+
+                    <button
+                        class="icon-btn"
+                        onclick="deleteClient('${client.id}')"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+/* =============================================================
+   PAGINATION
+============================================================= */
+
+function updatePagination() {
+
+    const total =
+        filteredClients.length;
+
+
+    const start =
+        total === 0
+            ? 0
+            : (
+                (currentPage - 1) *
+                PAGE_SIZE
+            ) + 1;
+
+
+    const end =
+        Math.min(
+            currentPage *
+            PAGE_SIZE,
+            total
+        );
+
+
+    document.getElementById(
+        "paginationInfo"
+    ).textContent =
+        `${start}–${end} of ${total} clients`;
+
+}
+
+
+function previousPage() {
+
+    if (currentPage <= 1) {
+        return;
+    }
+
+    currentPage--;
+
+    renderClients();
+
+}
+
+
+function nextPage() {
+
+    const totalPages =
+        Math.ceil(
+            filteredClients.length /
+            PAGE_SIZE
+        );
+
+
+    if (currentPage >= totalPages) {
+        return;
+    }
+
+
+    currentPage++;
+
+    renderClients();
+
+}
+
+
+/* =============================================================
+   OPEN CLIENT
+============================================================= */
+
+async function openClient(clientId) {
+
+    document
+        .getElementById("clientModal")
+        .classList.add("open");
+
+
+    document
+        .getElementById("clientDetail")
+        .innerHTML = `
+
+            <div class="state">
+
+                <div class="spinner"></div>
+
+                Loading complete client history...
+
+            </div>
+
+        `;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db.rpc(
+            "get_client_with_messages",
+            {
+                p_client_id:
+                    clientId
+            }
+        );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!data) {
+
+            throw new Error(
+                "Client was not found."
+            );
+
+        }
+
+
+        currentClient = data;
+
+
+        renderClientDetail(data);
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document
+            .getElementById("clientDetail")
+            .innerHTML = `
+
+                <div class="state">
+
+                    Unable to load client.
+
+                    <br><br>
+
+                    ${escapeHTML(error.message)}
+
+                </div>
+
+            `;
+
+    }
+
+}
+
+
+/* =============================================================
+   CLIENT DETAIL
+============================================================= */
+
+function renderClientDetail(data) {
+
+    const client =
+        data.client;
+
+
+    document.getElementById(
+        "modalClientName"
+    ).textContent =
+        client.name ||
+        "Unnamed Client";
+
+
+    const messages =
+        Array.isArray(data.messages)
+            ? data.messages
+            : [];
+
+
+    const replies =
+        Array.isArray(data.replies)
+            ? data.replies
+            : [];
+
+
+    document.getElementById(
+        "clientDetail"
+    ).innerHTML = `
+
+        <div class="client-profile">
+
+            ${detail(
+                "Email",
+                client.email ||
+                client.contact_email ||
+                "—"
+            )}
+
+            ${detail(
+                "Phone",
+                client.phone ||
+                "—"
+            )}
+
+            ${detail(
+                "Company",
+                client.company_name ||
+                client.company ||
+                "—"
+            )}
+
+            ${detail(
+                "Industry",
+                client.industry ||
+                "—"
+            )}
+
+            ${detail(
+                "Type",
+                client.type ||
+                "—"
+            )}
+
+            ${detail(
+                "Status",
+                client.status ||
+                "active"
+            )}
+
+            ${detail(
+                "Messages",
+                client.message_count ||
+                0
+            )}
+
+            ${detail(
+                "Last Message",
+                formatDate(
+                    client.last_message_at
+                )
+            )}
+
+        </div>
+
+
+        <div class="section-title">
+            Contact Messages (${messages.length})
+        </div>
+
+
+        ${
+            messages.length
+                ? messages
+                    .map(
+                        message =>
+                            renderMessage(
+                                message
+                            )
+                    )
+                    .join("")
+                : `
+                    <div class="state">
+                        No messages found.
+                    </div>
+                `
+        }
+
+
+        <div class="section-title">
+            Reply History (${replies.length})
+        </div>
+
+
+        ${
+            replies.length
+                ? replies
+                    .map(
+                        reply =>
+                            renderReply(
+                                reply
+                            )
+                    )
+                    .join("")
+                : `
+                    <div class="state">
+                        No replies recorded.
+                    </div>
+                `
+        }
+
+    `;
+
+}
+
+
+/* =============================================================
+   DETAIL CARD
+============================================================= */
+
+function detail(label, value) {
+
+    return `
+
+        <div class="detail-card">
+
+            <div class="detail-label">
+                ${escapeHTML(label)}
+            </div>
+
+            <div class="detail-value">
+                ${escapeHTML(
+                    String(value)
+                )}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =============================================================
+   RENDER MESSAGE
+============================================================= */
+
+function renderMessage(message) {
+
+    const body =
+        message.message ||
+        message.body ||
+        message.content ||
+        "";
+
+
+    const subject =
+        message.subject ||
+        "Contact Request";
+
+
+    return `
+
+        <div class="message">
+
+            <div class="message-top">
+
+                <div>
+
+                    <div class="message-subject">
+                        ${escapeHTML(subject)}
+                    </div>
+
+                    <div class="message-date">
+                        ${formatDate(
+                            message.created_at
+                        )}
+                    </div>
+
+                </div>
+
+
+                <span
+                    class="badge ${
+                        message.is_read
+                            ? "badge-active"
+                            : "badge-inactive"
+                    }"
+                >
+                    ${
+                        message.is_read
+                            ? "read"
+                            : "unread"
+                    }
+                </span>
+
+            </div>
+
+
+            <div class="message-body">
+                ${escapeHTML(body)}
+            </div>
+
+
+            <div class="message-actions">
+
+                ${
+                    !message.is_read
+                    ? `
+                        <button
+                            class="btn btn-light"
+                            onclick="markMessageRead('${message.id}')"
+                        >
+                            Mark Read
+                        </button>
+                    `
+                    : ""
+                }
+
+
+                <button
+                    class="btn btn-primary"
+                    onclick="showReplyBox(
+                        '${message.id}',
+                        '${escapeAttribute(
+                            message.email ||
+                            ""
+                        )}',
+                        '${escapeAttribute(
+                            subject
+                        )}'
+                    )"
+                >
+                    Reply
+                </button>
+
+
+                <button
+                    class="btn btn-danger"
+                    onclick="deleteMessage('${message.id}')"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+
+            <div
+                id="reply-box-${message.id}"
+            ></div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =============================================================
+   RENDER REPLY
+============================================================= */
+
+function renderReply(reply) {
+
+    return `
+
+        <div class="message">
+
+            <div class="message-top">
+
+                <div class="message-subject">
+                    ${escapeHTML(
+                        reply.subject ||
+                        "Reply"
+                    )}
+                </div>
+
+                <div class="message-date">
+                    ${formatDate(
+                        reply.created_at
+                    )}
+                </div>
+
+            </div>
+
+
+            <div class="message-body">
+                ${escapeHTML(
+                    reply.body ||
+                    ""
+                )}
+            </div>
+
+
+            <div class="message-date">
+
+                Sent to:
+                ${escapeHTML(
+                    reply.recipient_email ||
+                    "—"
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =============================================================
+   REPLY BOX
+============================================================= */
+
+function showReplyBox(
+    messageId,
+    email,
+    subject
+) {
+
+    const container =
+        document.getElementById(
+            `reply-box-${messageId}`
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="reply-box">
+
+            <input
+                id="reply-email-${messageId}"
+                value="${escapeAttribute(email)}"
+                placeholder="Recipient email"
+            >
+
+
+            <input
+                id="reply-subject-${messageId}"
+                value="Re: ${escapeAttribute(subject)}"
+                placeholder="Subject"
+            >
+
+
+            <textarea
+                id="reply-body-${messageId}"
+                placeholder="Write your reply..."
+            ></textarea>
+
+
+            <button
+                class="btn btn-primary"
+                onclick="sendReply('${messageId}')"
+            >
+                Open Email & Log Reply
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =============================================================
+   SEND / LOG REPLY
+============================================================= */
+
+async function sendReply(messageId) {
+
+    if (!currentClient) {
+
+        showToast(
+            "Client is not loaded.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const email =
+        document.getElementById(
+            `reply-email-${messageId}`
+        ).value.trim();
+
+
+    const subject =
+        document.getElementById(
+            `reply-subject-${messageId}`
+        ).value.trim();
+
+
+    const body =
+        document.getElementById(
+            `reply-body-${messageId}`
+        ).value.trim();
+
+
+    if (!email) {
+
+        showToast(
+            "Recipient email is required.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!body) {
+
+        showToast(
+            "Reply message is required.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /*
+         * First log the reply in Supabase.
+         */
+
+        const {
+            error
+        } = await db.rpc(
+            "client_portal_log_reply",
+            {
+                p_client_id:
+                    currentClient.client.id,
+
+                p_message_id:
+                    messageId,
+
+                p_recipient_email:
+                    email,
+
+                p_subject:
+                    subject,
+
+                p_body:
+                    body
+            }
+        );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        /*
+         * Then open the user's email application.
+         */
+
+        const mailto =
+            "mailto:" +
+            encodeURIComponent(email) +
+            "?subject=" +
+            encodeURIComponent(subject) +
+            "&body=" +
+            encodeURIComponent(body);
+
+
+        window.location.href =
+            mailto;
+
+
+        showToast(
+            "Reply logged successfully.",
+            "success"
+        );
+
+
+        await openClient(
+            currentClient.client.id
+        );
+
+
+        await loadEverything();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Unable to log reply.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   MARK MESSAGE READ
+============================================================= */
+
+async function markMessageRead(
+    messageId
+) {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db.rpc(
+            "client_portal_mark_message_read",
+            {
+                p_message_id:
+                    messageId
+            }
+        );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!data) {
+
+            showToast(
+                "Message was not found.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            "Message marked as read.",
+            "success"
+        );
+
+
+        if (currentClient) {
+
+            await openClient(
+                currentClient.client.id
+            );
+
+        }
+
+
+        await loadEverything();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   DELETE MESSAGE
+============================================================= */
+
+async function deleteMessage(
+    messageId
+) {
+
+    if (
+        !confirm(
+            "Delete this client message permanently?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db.rpc(
+            "client_portal_delete_message",
+            {
+                p_message_id:
+                    messageId
+            }
+        );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!data) {
+
+            showToast(
+                "Message was not found.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            "Message deleted.",
+            "success"
+        );
+
+
+        if (currentClient) {
+
+            await openClient(
+                currentClient.client.id
+            );
+
+        }
+
+
+        await loadEverything();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   ARCHIVE CLIENT
+============================================================= */
+
+async function archiveClient(
+    clientId
+) {
+
+    if (
+        !confirm(
+            "Archive this client?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db.rpc(
+            "client_portal_archive_client",
+            {
+                p_client_id:
+                    clientId
+            }
+        );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!data) {
+
+            showToast(
+                "Client was not found.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            "Client archived.",
+            "success"
+        );
+
+
+        await loadEverything();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   DELETE CLIENT
+============================================================= */
+
+async function deleteClient(
+    clientId
+) {
+
+    if (
+        !confirm(
+            "WARNING: This permanently deletes the client and related records. Continue?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db.rpc(
+            "client_portal_delete_client",
+            {
+                p_client_id:
+                    clientId
+            }
+        );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!data) {
+
+            showToast(
+                "Client was not found.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            "Client permanently deleted.",
+            "success"
+        );
+
+
+        closeModal();
+
+        await loadEverything();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =============================================================
+   REALTIME
+============================================================= */
+
+function subscribeRealtime() {
+
+    db
+        .channel(
+            "yalerima-client-management"
+        )
+
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "clients"
+            },
+            function () {
+
+                loadEverything();
+
+            }
+        )
+
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "contact_requests"
+            },
+            function () {
+
+                loadEverything();
+
+            }
+        )
+
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "client_message_replies"
+            },
+            function () {
+
+                loadEverything();
+
+            }
+        )
+
+        .subscribe();
+
+}
+
+
+/* =============================================================
+   EXCEL EXPORT
+============================================================= */
+
+function exportExcel() {
+
+    if (!filteredClients.length) {
+
+        showToast(
+            "There are no clients to export.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const rows =
+        filteredClients.map(
+            client => ({
+
+                "Client ID":
+                    client.id || "",
+
+                "Name":
+                    client.name || "",
+
+                "Email":
+                    client.email ||
+                    client.contact_email ||
+                    "",
+
+                "Phone":
+                    client.phone || "",
+
+                "Company":
+                    client.company_name ||
+                    client.company ||
+                    "",
+
+                "Industry":
+                    client.industry || "",
+
+                "Type":
+                    client.type || "",
+
+                "Status":
+                    client.archived_at
+                        ? "archived"
+                        : (
+                            client.status ||
+                            "active"
+                        ),
+
+                "Message Count":
+                    client.message_count || 0,
+
+                "First Message":
+                    client.first_message_at
+                        ? new Date(
+                            client.first_message_at
+                        ).toLocaleString()
+                        : "",
+
+                "Last Message":
+                    client.last_message_at
+                        ? new Date(
+                            client.last_message_at
+                        ).toLocaleString()
+                        : "",
+
+                "Created":
+                    client.created_at
+                        ? new Date(
+                            client.created_at
+                        ).toLocaleString()
+                        : "",
+
+                "Updated":
+                    client.updated_at
+                        ? new Date(
+                            client.updated_at
+                        ).toLocaleString()
+                        : ""
+
+            })
+        );
+
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(
+            rows
+        );
+
+
+    worksheet["!cols"] = [
+
+        { wch: 38 },
+        { wch: 25 },
+        { wch: 20 },
+        { wch: 25 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 22 },
+        { wch: 22 },
+        { wch: 22 },
+        { wch: 22 }
+
+    ];
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Clients"
+    );
+
+
+    XLSX.writeFile(
+        workbook,
+        "YALERIMA-GROUP-CLIENTS.xlsx"
+    );
+
+
+    showToast(
+        "Excel export created.",
+        "success"
+    );
+
+}
+
+
+/* =============================================================
+   PDF EXPORT
+============================================================= */
+
+function exportPDF() {
+
+    if (!filteredClients.length) {
+
+        showToast(
+            "There are no clients to export.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const pdf =
+        new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: "a4"
+        });
+
+
+    pdf.setFontSize(18);
+
+    pdf.text(
+        "YALERIMA GROUP",
+        14,
+        15
+    );
+
+
+    pdf.setFontSize(11);
+
+    pdf.text(
+        "Client Management — Client Registry",
+        14,
+        22
+    );
+
+
+    pdf.setFontSize(8);
+
+    pdf.text(
+        "Generated: " +
+        new Date().toLocaleString(),
+        14,
+        28
+    );
+
+
+    const rows =
+        filteredClients.map(
+            client => [
+
+                client.name ||
+                "Unnamed Client",
+
+                client.email ||
+                client.contact_email ||
+                "—",
+
+                client.phone ||
+                "—",
+
+                client.company_name ||
+                client.company ||
+                "—",
+
+                client.industry ||
+                "—",
+
+                String(
+                    client.message_count ||
+                    0
+                ),
+
+                client.archived_at
+                    ? "Archived"
+                    : (
+                        client.status ||
+                        "Active"
+                    ),
+
+                formatDate(
+                    client.last_message_at
+                )
+
+            ]
+        );
+
+
+    pdf.autoTable({
+
+        startY: 34,
+
+        head: [[
+
+            "Client",
+            "Email",
+            "Phone",
+            "Company",
+            "Industry",
+            "Messages",
+            "Status",
+            "Last Message"
+
+        ]],
+
+        body: rows,
+
+        styles: {
+
+            fontSize: 7,
+
+            cellPadding: 2
+
+        },
+
+        headStyles: {
+
+            fontSize: 7
+
+        },
+
+        margin: {
+
+            left: 10,
+
+            right: 10
+
+        }
+
+    });
+
+
+    pdf.save(
+        "YALERIMA-GROUP-CLIENTS.pdf"
+    );
+
+
+    showToast(
+        "PDF export created.",
+        "success"
+    );
+
+}
+
+
+/* =============================================================
+   CLOSE MODAL
+============================================================= */
+
+function closeModal() {
+
+    document
+        .getElementById("clientModal")
+        .classList.remove("open");
+
+
+    currentClient = null;
+
+}
+
+
+/* =============================================================
+   CLICK OUTSIDE MODAL
+============================================================= */
+
+document
+    .getElementById("clientModal")
+    .addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === this
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+/* =============================================================
+   LOADING
+============================================================= */
+
+function showLoading() {
+
+    tableBody.innerHTML = `
+
+        <tr>
+
+            <td colspan="8">
+
+                <div class="state">
+
+                    <div class="spinner"></div>
+
+                    Fetching all clients...
+
+                </div>
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+/* =============================================================
+   ERROR
+============================================================= */
+
+function showError(message) {
+
+    tableBody.innerHTML = `
+
+        <tr>
+
+            <td colspan="8">
+
+                <div class="state">
+
+                    <strong>
+                        Unable to load Client Management
+                    </strong>
+
+                    <br><br>
+
+                    ${escapeHTML(message)}
+
+                </div>
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+/* =============================================================
+   TOAST
+============================================================= */
+
+function showToast(
+    message,
+    type = ""
+) {
+
+    const container =
+        document.getElementById(
+            "toastContainer"
+        );
+
+
+    const toast =
+        document.createElement(
+            "div"
+        );
+
+
+    toast.className =
+        "toast " +
+        type;
+
+
+    toast.textContent =
+        message;
+
+
+    container.appendChild(
+        toast
+    );
+
+
+    setTimeout(
+        () => {
+
+            toast.remove();
+
+        },
+        3500
+    );
+
+}
+
+
+/* =============================================================
+   DATE
+============================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "—";
+    }
+
+
+    return date.toLocaleString(
+        undefined,
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+/* =============================================================
+   HTML SECURITY
+============================================================= */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =============================================================
+   ATTRIBUTE SECURITY
+============================================================= */
+
+function escapeAttribute(value) {
+
+    return String(value ?? "")
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /\r/g,
+            "\\r"
+        )
+        .replace(
+            /\n/g,
+            "\\n"
+        );
+
+}
+</script>
+
+</body>
+</html>
